@@ -16,11 +16,14 @@ def download_subtitles(movie_name):
         soup = BeautifulSoup(response.text, 'html.parser')
 
         # Encontrar o primeiro link de legenda usando a tag 'a' com href que contém 'subtitles/'
-        subtitle_link = soup.find('a', href=lambda href: href and '/subtitles/' in href)
+        subtitle_link = soup.find('a', href=lambda href: isinstance(href, str) and '/subtitles/' in href)
         
         if subtitle_link:
-            href = subtitle_link.get('href')
-            subtitle_id = href.split('/')
+            if subtitle_link and hasattr(subtitle_link, 'get'):
+                if not isinstance(subtitle_link, str):
+                    href = subtitle_link.get('href')
+                    if href and isinstance(href, str):
+                        subtitle_id = href.split('/')[-1]
             subtitle_url = f"https://www.opensubtitles.org/pt/subtitleserve/sub/{subtitle_id}"
             print(f"URL de download da legenda: {subtitle_url}... Fazendo download...")
             try:
